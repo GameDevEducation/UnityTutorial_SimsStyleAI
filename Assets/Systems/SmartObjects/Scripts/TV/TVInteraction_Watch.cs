@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(SmartObject_TV))]
-public class TVInteraction_TogglePower : SimpleInteraction
+public class TVInteraction_Watch : SimpleInteraction
 {
     protected SmartObject_TV LinkedTV;
 
@@ -13,10 +12,8 @@ public class TVInteraction_TogglePower : SimpleInteraction
         LinkedTV = GetComponent<SmartObject_TV>();
     }
 
-    public override void Perform(CommonAIBase performer, UnityAction<BaseInteraction> onCompleted)
+    public override bool CanPerform()
     {
-        LinkedTV.ToggleState();
-
-        base.Perform(performer, onCompleted);
+        return base.CanPerform() && LinkedTV.IsOn;
     }
 }
