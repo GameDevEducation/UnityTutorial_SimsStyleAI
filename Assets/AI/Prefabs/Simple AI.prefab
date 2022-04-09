@@ -1918,6 +1918,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab47965e2ca26454e9f9750c6c262f1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InitialFunLevel: 0.5
+  BaseFunDecayRate: 0.005
+  FunDisplay: {fileID: 1650712283202898805}
+  InitialEnergyLevel: 0.5
+  BaseEnergyDecayRate: 0.005
+  EnergyDisplay: {fileID: 3683975499223470499}
   PickInteractionInterval: 2
 --- !u!114 &5401173167965100727
 MonoBehaviour:
@@ -1931,4 +1937,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5aaf5b77b7592224b89d5b83f07fa98a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InitialFunLevel: 0.5
+  BaseFunDecayRate: 0.005
+  FunDisplay: {fileID: 1650712283202898805}
+  InitialEnergyLevel: 0.5
+  BaseEnergyDecayRate: 0.005
+  EnergyDisplay: {fileID: 3683975499223470499}
+  DefaultInteractionScore: 0
   PickInteractionInterval: 2
+  InteractionPickSize: 5
