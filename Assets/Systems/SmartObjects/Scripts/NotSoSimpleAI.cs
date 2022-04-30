@@ -60,7 +60,7 @@ public class NotSoSimpleAI : CommonAIBase
             case EStat.Fun: currentValue = CurrentFun; break;
         }
 
-        return (1f - currentValue) * amount;
+        return (1f - currentValue) * ApplyTraitsTo(target, Trait.ETargetType.Score, amount);
     }
 
     class ScoredInteraction
@@ -109,7 +109,7 @@ public class NotSoSimpleAI : CommonAIBase
         var selectedInteraction = sortedInteractions[selectedIndex].Interaction;
 
         CurrentInteraction = selectedInteraction;
-        CurrentInteraction.LockInteraction();
+        CurrentInteraction.LockInteraction(this);
         StartedPerforming = false;
 
         // move to the target

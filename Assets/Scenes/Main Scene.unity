@@ -748,6 +748,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 170932082, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 170932082, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 11e60b5003585b343bdeed7a5b305f41, type: 2}
     - target: {fileID: 2239232114933107060, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -780,6 +788,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5401173167965100727, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5401173167965100727, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 98d5f2989292ab24285cbc7b51379d0b, type: 2}
+    - target: {fileID: 5401173167965100727, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 268e1e8a74f31da45ab3bdda202e067a, type: 2}
     - target: {fileID: 8223693791530248982, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
       propertyPath: m_Name
       value: Simple AI
@@ -11375,6 +11395,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 170932082, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 170932082, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 98d5f2989292ab24285cbc7b51379d0b, type: 2}
+    - target: {fileID: 170932082, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 268e1e8a74f31da45ab3bdda202e067a, type: 2}
     - target: {fileID: 2239232114933107060, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -11407,6 +11439,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5401173167965100727, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5401173167965100727, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
+      propertyPath: Traits.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 11e60b5003585b343bdeed7a5b305f41, type: 2}
     - target: {fileID: 8223693791530248982, guid: 5cd2917a4acb1874092441bce2275577, type: 3}
       propertyPath: m_Name
       value: Simple AI (1)

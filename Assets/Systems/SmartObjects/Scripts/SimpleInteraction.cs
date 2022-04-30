@@ -7,35 +7,47 @@ public class SimpleInteraction : BaseInteraction
 {
     protected class PerformerInfo
     {
-        public CommonAIBase PerformingAI;
         public float ElapsedTime;
         public UnityAction<BaseInteraction> OnCompleted;
     }
 
     [SerializeField] protected int MaxSimultaneousUsers = 1;
 
-    protected int NumCurrentUsers = 0;
-    protected List<PerformerInfo> CurrentPerformers = new List<PerformerInfo> ();
-    
+    protected Dictionary<CommonAIBase, PerformerInfo> CurrentPerformers = new Dictionary<CommonAIBase, PerformerInfo> ();
+    public int NumCurrentUsers => CurrentPerformers.Count;
+
+    protected List<CommonAIBase> PerformersToCleanup = new List<CommonAIBase>();
+
     public override bool CanPerform()
     {
         return NumCurrentUsers < MaxSimultaneousUsers;
     }
 
-    public override void LockInteraction()
+    public override bool LockInteraction(CommonAIBase performer)
     {
-        ++NumCurrentUsers;
+        if (NumCurrentUsers >= MaxSimultaneousUsers)
+        {
+            Debug.LogError($"{performer.name} trying to lock {_DisplayName} which is already at max users");
+            return false;
+        }
 
-        if (NumCurrentUsers > MaxSimultaneousUsers)
-            Debug.LogError($"Too many users have locked this interaction {_DisplayName}");
+        if (CurrentPerformers.ContainsKey(performer))
+        {
+            Debug.LogError($"{performer.name} tried to lock {_DisplayName} multiple times.");
+            return false;
+        }
+
+        CurrentPerformers[performer] = null;
+
+        return true;
     }
 
-    public override void Perform(CommonAIBase performer, UnityAction<BaseInteraction> onCompleted)
+    public override bool Perform(CommonAIBase performer, UnityAction<BaseInteraction> onCompleted)
     {
-        if (NumCurrentUsers <= 0)
+        if (!CurrentPerformers.ContainsKey(performer))
         {
-            Debug.LogError($"Trying to perform an interaction when there are no users {_DisplayName}");
-            return;
+            Debug.LogError($"{performer.name} is trying to perform an interaction {_DisplayName} that they have not locked");
+            return false;
         }
 
         // check the interaction type
@@ -44,44 +56,65 @@ public class SimpleInteraction : BaseInteraction
             if (StatChanges.Length > 0)
                 ApplyStatChanges(performer, 1f);
 
-            onCompleted.Invoke(this);
+            OnInteractionCompleted(performer, onCompleted);
         }
         else if (InteractionType == EInteractionType.OverTime)
         {
-            CurrentPerformers.Add(new PerformerInfo() { PerformingAI = performer,
-                                                        ElapsedTime = 0, 
-                                                        OnCompleted = onCompleted });
+            CurrentPerformers[performer] = new PerformerInfo() { ElapsedTime = 0, OnCompleted = onCompleted };
+        }
+
+        return true;
+    }
+
+    protected void OnInteractionCompleted(CommonAIBase performer, UnityAction<BaseInteraction> onCompleted)
+    {
+        onCompleted.Invoke(this);
+
+        if (!PerformersToCleanup.Contains(performer))
+        {
+            PerformersToCleanup.Add(performer);
+            Debug.LogWarning($"{performer.name} did not unlock interaction in their OnCompleted handler for {_DisplayName}");
         }
     }
 
-    public override void UnlockInteraction()
+    public override bool UnlockInteraction(CommonAIBase performer)
     {
-        if (NumCurrentUsers <= 0)
-            Debug.LogError($"Trying to unlock an already unlocked interaction {_DisplayName}");
+        if (CurrentPerformers.ContainsKey(performer))
+        {
+            PerformersToCleanup.Add(performer);
+            return true;
+        }
 
-        --NumCurrentUsers;
+        Debug.LogError($"{performer.name} is trying to unlock an interaction {_DisplayName} they have not locked");
+
+        return false;
     }
 
     protected virtual void Update()
     {
         // update any current performers
-        for(int index = CurrentPerformers.Count - 1; index >= 0; index--)
+        foreach(var kvp in CurrentPerformers)
         {
-            PerformerInfo performer = CurrentPerformers[index];
+            CommonAIBase performer = kvp.Key;
+            PerformerInfo performerInfo = kvp.Value;
 
-            float previousElapsedTime = performer.ElapsedTime;
-            performer.ElapsedTime = Mathf.Min(performer.ElapsedTime + Time.deltaTime, _Duration);
+            if (performerInfo == null)
+                continue;
+
+            float previousElapsedTime = performerInfo.ElapsedTime;
+            performerInfo.ElapsedTime = Mathf.Min(performerInfo.ElapsedTime + Time.deltaTime, _Duration);
 
             if (StatChanges.Length > 0)
-                ApplyStatChanges(performer.PerformingAI, 
-                                 (performer.ElapsedTime - previousElapsedTime) / _Duration);
+                ApplyStatChanges(performer, (performerInfo.ElapsedTime - previousElapsedTime) / _Duration);
 
             // interaction complete?
-            if (performer.ElapsedTime >= _Duration)
-            {
-                performer.OnCompleted.Invoke(this);
-                CurrentPerformers.RemoveAt(index);
-            }
+            if (performerInfo.ElapsedTime >= _Duration)
+                OnInteractionCompleted(performer, performerInfo.OnCompleted);
         }
+
+        // cleanup any performers that are finished
+        foreach(var performer in PerformersToCleanup)
+            CurrentPerformers.Remove(performer);
+        PerformersToCleanup.Clear();
     }
 }

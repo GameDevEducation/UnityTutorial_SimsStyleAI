@@ -24,6 +24,9 @@ public class CommonAIBase : MonoBehaviour
     [SerializeField] float BaseEnergyDecayRate = 0.005f;
     [SerializeField] UnityEngine.UI.Slider EnergyDisplay;
 
+    [Header("Traits")]
+    [SerializeField] protected List<Trait> Traits;
+
     protected BaseNavigation Navigation;
 
     protected BaseInteraction CurrentInteraction
@@ -97,6 +100,16 @@ public class CommonAIBase : MonoBehaviour
         EnergyDisplay.value = CurrentEnergy = InitialEnergyLevel;
     }
 
+    protected float ApplyTraitsTo(EStat targetStat, Trait.ETargetType targetType, float currentValue)
+    {
+        foreach(var trait in Traits)
+        {
+            currentValue = trait.Apply(targetStat, targetType, currentValue);
+        }
+
+        return currentValue;
+    }
+
     // Update is called once per frame
     protected virtual void Update()
     {
@@ -108,27 +121,29 @@ public class CommonAIBase : MonoBehaviour
                 CurrentInteraction.Perform(this, OnInteractionFinished);
             }
         }
-
-        CurrentFun = Mathf.Clamp01(CurrentFun - BaseFunDecayRate * Time.deltaTime);
+       
+        CurrentFun = Mathf.Clamp01(CurrentFun - ApplyTraitsTo(EStat.Fun, Trait.ETargetType.DecayRate, BaseFunDecayRate) * Time.deltaTime);
         FunDisplay.value = CurrentFun;
 
-        CurrentEnergy = Mathf.Clamp01(CurrentEnergy - BaseEnergyDecayRate * Time.deltaTime);
+        CurrentEnergy = Mathf.Clamp01(CurrentEnergy - ApplyTraitsTo(EStat.Energy, Trait.ETargetType.DecayRate, BaseEnergyDecayRate) * Time.deltaTime);
         EnergyDisplay.value = CurrentEnergy;
     }
 
     protected virtual void OnInteractionFinished(BaseInteraction interaction)
     {
-        interaction.UnlockInteraction();
+        interaction.UnlockInteraction(this);
         CurrentInteraction = null;
         Debug.Log($"Finished {interaction.DisplayName}");
     }
 
     public void UpdateIndividualStat(EStat target, float amount)
     {
-        switch(target)
+        float adjustedAmount = ApplyTraitsTo(target, Trait.ETargetType.Impact, amount);
+
+        switch (target)
         {
-            case EStat.Energy: CurrentEnergy += amount; break;
-            case EStat.Fun:    CurrentFun += amount; break;
+            case EStat.Energy: CurrentEnergy = Mathf.Clamp01(CurrentEnergy + adjustedAmount); break;
+            case EStat.Fun:    CurrentFun = Mathf.Clamp01(CurrentFun + adjustedAmount); break;
         }
     }    
 }

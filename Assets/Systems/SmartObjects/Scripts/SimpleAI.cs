@@ -41,7 +41,7 @@ public class SimpleAI : CommonAIBase
         if (selectedInteraction.CanPerform())
         {
             CurrentInteraction = selectedInteraction;
-            CurrentInteraction.LockInteraction();
+            CurrentInteraction.LockInteraction(this);
             StartedPerforming = false;
 
             // move to the target
