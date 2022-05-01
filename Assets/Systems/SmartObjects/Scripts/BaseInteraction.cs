@@ -13,7 +13,7 @@ public enum EInteractionType
 [System.Serializable]
 public class InteractionStatChange
 {
-    public EStat Target;
+    public AIStat LinkedStat;
     public float Value;
 }
 
@@ -38,7 +38,7 @@ public abstract class BaseInteraction : MonoBehaviour
     {
         foreach(var statChange in StatChanges)
         {
-            performer.UpdateIndividualStat(statChange.Target, statChange.Value * proportion);
+            performer.UpdateIndividualStat(statChange.LinkedStat, statChange.Value * proportion, Trait.ETargetType.Impact);
         }
     }
 }

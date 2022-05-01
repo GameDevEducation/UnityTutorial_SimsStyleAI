@@ -46,21 +46,16 @@ public class NotSoSimpleAI : CommonAIBase
 
         float score = 0f;
         foreach(var change in interaction.StatChanges)
-            score += ScoreChange(change.Target, change.Value);
+            score += ScoreChange(change.LinkedStat, change.Value);
 
         return score;
     }
 
-    float ScoreChange(EStat target, float amount)
+    float ScoreChange(AIStat linkedStat, float amount)
     {
-        float currentValue = 0f;
-        switch (target)
-        {
-            case EStat.Energy: currentValue = CurrentEnergy; break;
-            case EStat.Fun: currentValue = CurrentFun; break;
-        }
+        float currentValue = GetStatValue(linkedStat);
 
-        return (1f - currentValue) * ApplyTraitsTo(target, Trait.ETargetType.Score, amount);
+        return (1f - currentValue) * ApplyTraitsTo(linkedStat, Trait.ETargetType.Score, amount);
     }
 
     class ScoredInteraction

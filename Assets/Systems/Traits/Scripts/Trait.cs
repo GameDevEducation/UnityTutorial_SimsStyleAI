@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 [System.Serializable]
 public class TraitElement
 {
-    public EStat Stat;
+    public AIStat LinkedStat;
 
     [Header("Scoring Scales")]
     [Range(0.5f, 1.5f)][FormerlySerializedAs("PositiveScale")] public float Scoring_PositiveScale = 1f;
@@ -19,9 +19,9 @@ public class TraitElement
     [Header("Decay Rate")]
     [Range(0.5f, 1.5f)] public float DecayRateScale = 1f;
 
-    public float Apply(EStat targetStat, Trait.ETargetType targetType, float currentValue)
+    public float Apply(AIStat targetStat, Trait.ETargetType targetType, float currentValue)
     {
-        if (targetStat == Stat)
+        if (targetStat == LinkedStat)
         {
             if (targetType == Trait.ETargetType.DecayRate)
                 currentValue *= DecayRateScale;
@@ -58,7 +58,7 @@ public class Trait : ScriptableObject
     public string DisplayName;
     public TraitElement[] Impacts;
 
-    public float Apply(EStat targetStat, Trait.ETargetType targetType, float currentValue)
+    public float Apply(AIStat targetStat, Trait.ETargetType targetType, float currentValue)
     {
         foreach (var impact in Impacts)
         {

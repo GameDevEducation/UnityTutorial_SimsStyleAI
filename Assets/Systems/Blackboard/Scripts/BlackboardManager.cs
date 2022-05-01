@@ -4,10 +4,7 @@ using UnityEngine;
 
 public enum EBlackboardKey
 {
-    Character_Stat_Energy,
-    Character_Stat_Fun,
     Character_FocusObject,
-
 
     Household_ObjectsInUse
 }
@@ -21,6 +18,7 @@ public class Blackboard
     Dictionary<EBlackboardKey, Vector3>     Vector3Values       = new Dictionary<EBlackboardKey, Vector3>();
     Dictionary<EBlackboardKey, GameObject>  GameObjectValues    = new Dictionary<EBlackboardKey, GameObject>();
     Dictionary<EBlackboardKey, object>      GenericValues       = new Dictionary<EBlackboardKey, object>();
+    Dictionary<AIStat, float>               AIStatValues        = new Dictionary<AIStat, float>();   
 
     public void SetGeneric<T>(EBlackboardKey key, T value)
     {
@@ -40,6 +38,31 @@ public class Blackboard
         if (GenericValues.ContainsKey(key))
         {
             value = (T)GenericValues[key];
+            return true;
+        }
+
+        value = defaultValue;
+        return false;
+    }
+
+    public void SetStat(AIStat linkedStat, float value)
+    {
+        AIStatValues[linkedStat] = value;
+    }
+
+    public float GetStat(AIStat linkedStat)
+    {
+        if (!AIStatValues.ContainsKey(linkedStat))
+            throw new System.ArgumentException($"Could not find value for {linkedStat.DisplayName} in AIStats");
+
+        return AIStatValues[linkedStat];
+    }
+
+    public bool TryGetStat(AIStat linkedStat, out float value, float defaultValue = 0f)
+    {
+        if (AIStatValues.ContainsKey(linkedStat))
+        {
+            value = AIStatValues[linkedStat];
             return true;
         }
 

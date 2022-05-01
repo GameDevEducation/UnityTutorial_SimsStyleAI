@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25e2edbb068038c43b5e8a3ab6301e82, type: 3}
+  m_Name: AIStat_TechUse
+  m_EditorClassIdentifier: 
+  <DisplayName>k__BackingField: Technology Use
+  <IsVisible>k__BackingField: 0
+  <InitialValue>k__BackingField: 0
+  <DecayRate>k__BackingField: 0
