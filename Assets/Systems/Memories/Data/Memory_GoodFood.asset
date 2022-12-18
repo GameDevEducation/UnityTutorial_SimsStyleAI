@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c19e5a8846517b40ad0a4feb963ee67, type: 3}
+  m_Name: Memory_GoodFood
+  m_EditorClassIdentifier: 
+  Name: Good Food
+  Description: Ate great food
+  Duration: 60
+  StatChanges:
+  - LinkedStat: {fileID: 11400000, guid: 8f9d5fb8f9f652f4fb1f6c91d8cd4b74, type: 2}
+    Value: 1.2
+  MemoriesCountered:
+  - {fileID: 11400000, guid: 3d96fce4cc400bc4ba27d043e10c0968, type: 2}

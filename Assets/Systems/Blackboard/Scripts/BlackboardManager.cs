@@ -6,7 +6,10 @@ public enum EBlackboardKey
 {
     Character_FocusObject,
 
-    Household_ObjectsInUse
+    Household_ObjectsInUse,
+
+    Memories_ShortTerm,
+    Memories_LongTerm
 }
 
 public class Blackboard
@@ -70,6 +73,26 @@ public class Blackboard
         return false;
     }
 
+    private T Get<T>(Dictionary<EBlackboardKey, T> keySet, EBlackboardKey key)
+    {
+        if (!keySet.ContainsKey(key))
+            throw new System.ArgumentException($"Could not find value for {key} in {typeof(T).Name}Values");
+
+        return keySet[key];
+    }
+
+    private bool TryGet<T>(Dictionary<EBlackboardKey, T> keySet, EBlackboardKey key, out T value, T defaultValue = default)
+    {
+        if (keySet.ContainsKey(key))
+        {
+            value = keySet[key];
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
     public void Set(EBlackboardKey key, int value)
     {
         IntValues[key] = value;
@@ -77,22 +100,12 @@ public class Blackboard
 
     public int GetInt(EBlackboardKey key)
     {
-        if (!IntValues.ContainsKey(key))
-            throw new System.ArgumentException($"Could not find value for {key} in IntValues");
-
-        return IntValues[key];
+        return Get(IntValues, key);
     }
 
     public bool TryGet(EBlackboardKey key, out int value, int defaultValue = 0)
     {
-        if (IntValues.ContainsKey(key))
-        {
-            value = IntValues[key];
-            return true;
-        }
-
-        value = defaultValue;
-        return false;
+        return TryGet(IntValues, key, out value, defaultValue);
     }
 
     public void Set(EBlackboardKey key, float value)
@@ -102,22 +115,12 @@ public class Blackboard
 
     public float GetFloat(EBlackboardKey key)
     {
-        if (!FloatValues.ContainsKey(key))
-            throw new System.ArgumentException($"Could not find value for {key} in FloatValues");
-
-        return FloatValues[key];
+        return Get(FloatValues, key);
     }
 
     public bool TryGet(EBlackboardKey key, out float value, float defaultValue = 0)
     {
-        if (FloatValues.ContainsKey(key))
-        {
-            value = FloatValues[key];
-            return true;
-        }
-
-        value = defaultValue;
-        return false;
+        return TryGet(FloatValues, key, out value, defaultValue);
     }
 
     public void Set(EBlackboardKey key, bool value)
@@ -127,22 +130,12 @@ public class Blackboard
 
     public bool GetBool(EBlackboardKey key)
     {
-        if (!BoolValues.ContainsKey(key))
-            throw new System.ArgumentException($"Could not find value for {key} in BoolValues");
-
-        return BoolValues[key];
+        return Get(BoolValues, key);
     }
 
     public bool TryGet(EBlackboardKey key, out bool value, bool defaultValue = false)
     {
-        if (BoolValues.ContainsKey(key))
-        {
-            value = BoolValues[key];
-            return true;
-        }
-
-        value = defaultValue;
-        return false;
+        return TryGet(BoolValues, key, out value, defaultValue);
     }
 
     public void Set(EBlackboardKey key, string value)
@@ -152,22 +145,12 @@ public class Blackboard
 
     public string GetString(EBlackboardKey key)
     {
-        if (!StringValues.ContainsKey(key))
-            throw new System.ArgumentException($"Could not find value for {key} in StringValues");
-
-        return StringValues[key];
+        return Get(StringValues, key);
     }
 
     public bool TryGet(EBlackboardKey key, out string value, string defaultValue = "")
     {
-        if (IntValues.ContainsKey(key))
-        {
-            value = StringValues[key];
-            return true;
-        }
-
-        value = defaultValue;
-        return false;
+        return TryGet(StringValues, key, out value, defaultValue);
     }
 
     public void Set(EBlackboardKey key, Vector3 value)
@@ -177,22 +160,12 @@ public class Blackboard
 
     public Vector3 GetVector3(EBlackboardKey key)
     {
-        if (!Vector3Values.ContainsKey(key))
-            throw new System.ArgumentException($"Could not find value for {key} in Vector3Values");
-
-        return Vector3Values[key];
+        return Get(Vector3Values, key);
     }
 
     public bool TryGet(EBlackboardKey key, out Vector3 value, Vector3 defaultValue)
     {
-        if (Vector3Values.ContainsKey(key))
-        {
-            value = Vector3Values[key];
-            return true;
-        }
-
-        value = defaultValue;
-        return false;
+        return TryGet(Vector3Values, key, out value, defaultValue);
     }
 
     public void Set(EBlackboardKey key, GameObject value)
@@ -202,22 +175,12 @@ public class Blackboard
 
     public GameObject GetGameObject(EBlackboardKey key)
     {
-        if (!GameObjectValues.ContainsKey(key))
-            throw new System.ArgumentException($"Could not find value for {key} in GameObjectValues");
-
-        return GameObjectValues[key];
+        return Get(GameObjectValues, key);
     }
 
     public bool TryGet(EBlackboardKey key, out GameObject value, GameObject defaultValue = null)
     {
-        if (GameObjectValues.ContainsKey(key))
-        {
-            value = GameObjectValues[key];
-            return true;
-        }
-
-        value = defaultValue;
-        return false;
+        return TryGet(GameObjectValues, key, out value, defaultValue);
     }
 }
 

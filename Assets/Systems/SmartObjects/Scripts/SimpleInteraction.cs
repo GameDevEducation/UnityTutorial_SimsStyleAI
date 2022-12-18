@@ -54,11 +54,11 @@ public class SimpleInteraction : BaseInteraction
         if (InteractionType == EInteractionType.Instantaneous)
         {
             if (StatChanges.Length > 0)
-                ApplyStatChanges(performer, 1f);
+                ApplyInteractionEffects(performer, 1f, true);
 
             OnInteractionCompleted(performer, onCompleted);
         }
-        else if (InteractionType == EInteractionType.OverTime)
+        else if (InteractionType == EInteractionType.OverTime || InteractionType == EInteractionType.AfterTime)
         {
             CurrentPerformers[performer] = new PerformerInfo() { ElapsedTime = 0, OnCompleted = onCompleted };
         }
@@ -103,12 +103,18 @@ public class SimpleInteraction : BaseInteraction
 
             float previousElapsedTime = performerInfo.ElapsedTime;
             performerInfo.ElapsedTime = Mathf.Min(performerInfo.ElapsedTime + Time.deltaTime, _Duration);
+            bool isFinalTick = performerInfo.ElapsedTime >= _Duration;
 
-            if (StatChanges.Length > 0)
-                ApplyStatChanges(performer, (performerInfo.ElapsedTime - previousElapsedTime) / _Duration);
+            bool continueInteraction = false;
+            if (StatChanges.Length > 0 && 
+                ((InteractionType == EInteractionType.OverTime) ||
+                 (InteractionType == EInteractionType.AfterTime && isFinalTick)))
+            {
+                continueInteraction = ApplyInteractionEffects(performer, (performerInfo.ElapsedTime - previousElapsedTime) / _Duration, isFinalTick);
+            }
 
             // interaction complete?
-            if (performerInfo.ElapsedTime >= _Duration)
+            if (!continueInteraction || isFinalTick)
                 OnInteractionCompleted(performer, performerInfo.OnCompleted);
         }
 

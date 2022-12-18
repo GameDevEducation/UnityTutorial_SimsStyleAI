@@ -23,6 +23,9 @@ public class CommonAIBase : MonoBehaviour
     [Header("Traits")]
     [SerializeField] protected List<Trait> Traits;
 
+    [Header("Memories")]
+    [SerializeField] int LongTermMemoryThreshold = 2;
+
     protected BaseNavigation Navigation;
     protected bool StartedPerforming = false;
 
@@ -84,6 +87,9 @@ public class CommonAIBase : MonoBehaviour
         HouseholdBlackboard = BlackboardManager.Instance.GetSharedBlackboard(HouseholdID);
         IndividualBlackboard = BlackboardManager.Instance.GetIndividualBlackboard(this);
 
+        IndividualBlackboard.SetGeneric(EBlackboardKey.Memories_ShortTerm, new List<MemoryFragment>());
+        IndividualBlackboard.SetGeneric(EBlackboardKey.Memories_LongTerm, new List<MemoryFragment>());
+
         // setup the stats
         foreach (var statConfig in Stats)
         {
@@ -126,6 +132,22 @@ public class CommonAIBase : MonoBehaviour
         {
             UpdateIndividualStat(statConfig.LinkedStat, -DecayRates[statConfig.LinkedStat] * Time.deltaTime, Trait.ETargetType.DecayRate);
         }
+
+        // tick recent memories
+        List<MemoryFragment> recentMemories = IndividualBlackboard.GetGeneric<List<MemoryFragment>>(EBlackboardKey.Memories_ShortTerm);
+        bool memoriesChanged = false;
+
+        for(int index = recentMemories.Count - 1; index >= 0; index--)
+        {
+            if (!recentMemories[index].Tick(Time.deltaTime))
+            {
+                recentMemories.RemoveAt(index);
+                memoriesChanged = true;
+            }
+        }
+
+        if (memoriesChanged)
+            IndividualBlackboard.SetGeneric(EBlackboardKey.Memories_ShortTerm, recentMemories);
     }
 
     protected virtual void OnInteractionFinished(BaseInteraction interaction)
@@ -149,5 +171,77 @@ public class CommonAIBase : MonoBehaviour
     public float GetStatValue(AIStat linkedStat)
     {
         return IndividualBlackboard.GetStat(linkedStat);
+    }
+
+    public void AddMemories(MemoryFragment[] memoriesToAdd)
+    {
+        foreach (var memory in memoriesToAdd)
+            AddMemory(memory);
+    }
+
+    protected void AddMemory(MemoryFragment memoryToAdd)
+    {
+        List<MemoryFragment> permanentMemories = IndividualBlackboard.GetGeneric<List<MemoryFragment>>(EBlackboardKey.Memories_LongTerm);
+
+        // in long term memory already?
+        MemoryFragment memoryToCancel = null;
+        foreach(var memory in permanentMemories)
+        {
+            if (memoryToAdd.IsSimilarTo(memory))
+                return;
+            if (memory.IsCancelledBy(memoryToAdd))
+                memoryToCancel = memory;
+        }
+
+        // does this cancel a long term memory?
+        if (memoryToCancel != null)
+        {
+            permanentMemories.Remove(memoryToCancel);
+            IndividualBlackboard.SetGeneric(EBlackboardKey.Memories_LongTerm, permanentMemories);
+        }
+
+        List<MemoryFragment> recentMemories = IndividualBlackboard.GetGeneric<List<MemoryFragment>>(EBlackboardKey.Memories_ShortTerm);
+
+        // does this cancel a recent memory?
+        MemoryFragment existingRecentMemory = null;
+        foreach(var memory in recentMemories)
+        {
+            if (memoryToAdd.IsSimilarTo(memory))
+                existingRecentMemory = memory;
+            if (memory.IsCancelledBy(memoryToAdd))
+                memoryToCancel = memory;
+        }
+
+        // does this cancel a short term memory?
+        if (memoryToCancel != null)
+        {
+            recentMemories.Remove(memoryToCancel);
+            IndividualBlackboard.SetGeneric(EBlackboardKey.Memories_ShortTerm, recentMemories);
+        }
+
+        if (existingRecentMemory == null)
+        {
+            Debug.Log($"Added memory {memoryToAdd.Name}");
+
+            recentMemories.Add(memoryToAdd.Duplicate());
+            IndividualBlackboard.SetGeneric(EBlackboardKey.Memories_ShortTerm, recentMemories);
+        }
+        else
+        {
+            Debug.Log($"Reinforced memory {memoryToAdd.Name}");
+
+            existingRecentMemory.Reinforce(memoryToAdd);
+
+            if (existingRecentMemory.Occurrences >= LongTermMemoryThreshold)
+            {
+                permanentMemories.Add(existingRecentMemory);
+                recentMemories.Remove(existingRecentMemory);
+
+                IndividualBlackboard.SetGeneric(EBlackboardKey.Memories_ShortTerm, recentMemories);
+                IndividualBlackboard.SetGeneric(EBlackboardKey.Memories_LongTerm, permanentMemories);
+
+                Debug.Log($"Memory {existingRecentMemory.Name} became permanent!");
+            }
+        }
     }
 }

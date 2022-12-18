@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(BaseNavigation))]
 public class NotSoSimpleAI : CommonAIBase
@@ -44,18 +45,37 @@ public class NotSoSimpleAI : CommonAIBase
             return DefaultInteractionScore;
         }
 
+        List<MemoryFragment> recentMemories = IndividualBlackboard.GetGeneric<List<MemoryFragment>>(EBlackboardKey.Memories_ShortTerm);
+        List<MemoryFragment> permanentMemories = IndividualBlackboard.GetGeneric<List<MemoryFragment>>(EBlackboardKey.Memories_LongTerm);
+
         float score = 0f;
         foreach(var change in interaction.StatChanges)
-            score += ScoreChange(change.LinkedStat, change.Value);
+            score += ScoreChange(change.LinkedStat, change.Value, recentMemories, permanentMemories);
 
         return score;
     }
 
-    float ScoreChange(AIStat linkedStat, float amount)
+    float ScoreChange(AIStat linkedStat, float amount, List<MemoryFragment> recentMemories, List<MemoryFragment> permanentMemories)
     {
         float currentValue = GetStatValue(linkedStat);
 
+        ModifyValueBasedOnMemories(currentValue, linkedStat, recentMemories);
+        ModifyValueBasedOnMemories(currentValue, linkedStat, permanentMemories);
+
         return (1f - currentValue) * ApplyTraitsTo(linkedStat, Trait.ETargetType.Score, amount);
+    }
+
+    float ModifyValueBasedOnMemories(float currentValue, AIStat linkedStat, List<MemoryFragment> memories)
+    {
+        foreach (var memory in memories)
+        {
+            foreach (var change in memory.StatChanges)
+            {
+                if (change.LinkedStat == linkedStat)
+                    currentValue *= change.Value;
+            }
+        }
+        return currentValue;
     }
 
     class ScoredInteraction
