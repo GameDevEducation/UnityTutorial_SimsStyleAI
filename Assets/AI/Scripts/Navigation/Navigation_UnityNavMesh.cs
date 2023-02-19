@@ -45,8 +45,21 @@ public class Navigation_UnityNavMesh : BaseNavigation
 
     protected override void Tick_PathFollowing()
     {
+        bool atDestination = false;
         // do we have a path and we near the destination?
         if (LinkedAgent.hasPath && LinkedAgent.remainingDistance <= LinkedAgent.stoppingDistance)
+        {
+            atDestination = true;
+        }
+        else if (LinkedAgent.hasPath == false)
+        {
+            Vector3 vecToDestination = Destination - transform.position;
+            vecToDestination.y = 0f;
+
+            atDestination = vecToDestination.magnitude <= DestinationReachedThreshold;
+        }
+
+        if (atDestination) 
         {
             OnReachedDestination();
         }
