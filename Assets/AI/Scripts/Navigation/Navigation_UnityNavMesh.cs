@@ -54,9 +54,11 @@ public class Navigation_UnityNavMesh : BaseNavigation
         else if (LinkedAgent.hasPath == false)
         {
             Vector3 vecToDestination = Destination - transform.position;
+            float heightDelta = Mathf.Abs(vecToDestination.y);
             vecToDestination.y = 0f;
 
-            atDestination = vecToDestination.magnitude <= DestinationReachedThreshold;
+            atDestination = heightDelta < LinkedAgent.height && 
+                            vecToDestination.magnitude <= DestinationReachedThreshold;
         }
 
         if (atDestination) 
