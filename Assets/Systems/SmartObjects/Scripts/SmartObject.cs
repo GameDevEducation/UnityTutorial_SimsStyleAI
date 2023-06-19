@@ -6,12 +6,15 @@ public class SmartObject : MonoBehaviour
 {
     [SerializeField] protected string _DisplayName;
     [SerializeField] protected Transform _InteractionMarker;
+    [SerializeField] protected Transform _LookAtPoint;
 
     protected List<BaseInteraction> CachedInteractions = null;
 
     public Vector3 InteractionPoint => _InteractionMarker != null ? _InteractionMarker.position : transform.position;
 
     public string DisplayName => _DisplayName;
+    public Transform LookAtPoint => _LookAtPoint != null ? _LookAtPoint : transform;
+
     public List<BaseInteraction> Interactions
     {
         get

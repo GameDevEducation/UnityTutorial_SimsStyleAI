@@ -18,6 +18,9 @@ public abstract class BaseNavigation : MonoBehaviour
     [SerializeField] protected float MaxMoveSpeed = 5f;
     [SerializeField] protected float RotationSpeed = 120f;
 
+    [Header("Animation")]
+    [SerializeField] protected Animator AnimController;
+
     [Header("Debug Tools")]
     [SerializeField] protected bool DEBUG_UseMoveTarget;
     [SerializeField] protected Transform DEBUG_MoveTarget;
@@ -57,6 +60,9 @@ public abstract class BaseNavigation : MonoBehaviour
             Tick_Pathfinding();
 
         Tick_Default();
+
+        if (AnimController != null)
+            Tick_Animation();
     }
 
     void FixedUpdate()
@@ -115,4 +121,5 @@ public abstract class BaseNavigation : MonoBehaviour
     protected abstract void Tick_Default();
     protected abstract void Tick_Pathfinding();
     protected abstract void Tick_PathFollowing();
+    protected abstract void Tick_Animation();
 }

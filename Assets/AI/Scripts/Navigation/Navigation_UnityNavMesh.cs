@@ -72,6 +72,15 @@ public class Navigation_UnityNavMesh : BaseNavigation
         }
     }
 
+    protected override void Tick_Animation()
+    {
+        float forwardsSpeed = Vector3.Dot(LinkedAgent.velocity, transform.forward) / LinkedAgent.speed;
+        float sidewaysSpeed = Vector3.Dot(LinkedAgent.velocity, transform.right) / LinkedAgent.speed;
+
+        AnimController.SetFloat("ForwardsSpeed", forwardsSpeed);
+        AnimController.SetFloat("SidewaysSpeed", sidewaysSpeed);
+    }
+
     public override void StopMovement()
     {
         LinkedAgent.ResetPath();

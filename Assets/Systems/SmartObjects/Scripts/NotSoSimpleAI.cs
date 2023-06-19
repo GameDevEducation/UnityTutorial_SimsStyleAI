@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using System.Linq;
-using Unity.VisualScripting;
 
 [RequireComponent(typeof(BaseNavigation))]
 public class NotSoSimpleAI : CommonAIBase
@@ -11,6 +11,8 @@ public class NotSoSimpleAI : CommonAIBase
     [SerializeField] protected float PickInteractionInterval = 2f;
     [SerializeField] protected int InteractionPickSize = 5;
     [SerializeField] bool AvoidInUseObjects = true;
+
+    [SerializeField] UnityEvent<Transform> OnNewObjectSelected = new();
 
     protected float TimeUntilNextInteractionPicked = -1f;
 
@@ -113,7 +115,10 @@ public class NotSoSimpleAI : CommonAIBase
         }
 
         if (unsortedInteractions.Count == 0)
+        {
+            OnNewObjectSelected.Invoke(null);
             return;
+        }
 
         // sort and pick from one of the best interactions
         var sortedInteractions = unsortedInteractions.OrderByDescending(scoredInteraction => scoredInteraction.Score).ToList();
@@ -126,6 +131,8 @@ public class NotSoSimpleAI : CommonAIBase
         CurrentInteraction = selectedInteraction;
         CurrentInteraction.LockInteraction(this);
         StartedPerforming = false;
+
+        OnNewObjectSelected.Invoke(selectedObject.LookAtPoint);
 
         // move to the target
         if (!Navigation.SetDestination(selectedObject.InteractionPoint))
